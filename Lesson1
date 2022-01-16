@@ -51,6 +51,18 @@ list_word2_1 = [
 for list in list_word2_1:
     print(type(list), list, len(list))
 
+"""
+Задание 3.
+
+Определить, какие из слов «attribute», «класс», «функция», «type»
+невозможно записать в байтовом типе с помощью маркировки b'' (без encode decode).
+
+Подсказки:
+--- используйте списки и циклы, не дублируйте функции
+--- обязательно!!! усложните задачу, "отловив" и обработав исключение,
+придумайте как это сделать
+"""
+
 print('Задание 3 \n','-'*20)
 list_word3 = [
     'attribute',
@@ -63,3 +75,25 @@ for word in list_word3:
         print(f'{bytes(word,"ascii")} - в байтовом типе')
     except UnicodeError:
         print(f'{word} -  НЕ в байтовом типе')
+
+"""
+Задание 4.
+
+Преобразовать слова «разработка», «администрирование», «protocol»,
+«standard» из строкового представления в байтовое и выполнить
+обратное преобразование (используя методы encode и decode).
+
+Подсказки:
+--- используйте списки и циклы, не дублируйте функции
+"""
+print('Задание 4 \n','-'*20)
+
+list_word4 = ['разработка', 'администрирование', 'protocol', 'standard']
+
+for word in list_word4:
+    print('Исходный вариант: ', word, type(word))
+    word_byte = word.encode('utf-8')
+    print('в байтах :', word_byte, type(word_byte))
+    word_str = word_byte.decode('utf-8')
+    print('в строке :', word_str, type(word_str))
+    print('-'*20)
