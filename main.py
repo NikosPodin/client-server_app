@@ -1,77 +1,49 @@
 """
-2. Задание на закрепление знаний по модулю json. Есть файл orders
-в формате JSON с информацией о заказах. Написать скрипт, автоматизирующий
-его заполнение данными.
-
+3. Задание на закрепление знаний по модулю yaml.
+ Написать скрипт, автоматизирующий сохранение данных
+ в файле YAML-формата.
 Для этого:
-Создать функцию write_order_to_json(), в которую передается
-5 параметров — товар (item), количество (quantity), цена (price),
-покупатель (buyer), дата (date). Функция должна предусматривать запись
-данных в виде словаря в файл orders.json. При записи данных указать
-величину отступа в 4 пробельных символа;
-Проверить работу программы через вызов функции write_order_to_json()
-с передачей в нее значений каждого параметра.
+.
+Подготовить данные для записи в виде словаря, в котором
+первому ключу соответствует список, второму — целое число,
+третьему — вложенный словарь, где значение каждого ключа —
+это целое число с юникод-символом, отсутствующим в кодировке
+ASCII(например, €);
 
-ПРОШУ ВАС НЕ УДАЛЯТЬ ИСХОДНЫЙ JSON-ФАЙЛ
-ПРИМЕР ТОГО, ЧТО ДОЛЖНО ПОЛУЧИТЬСЯ
+Реализовать сохранение данных в файл формата YAML — например,
+в файл file.yaml. При этом обеспечить стилизацию файла с помощью
+параметра default_flow_style, а также установить возможность работы
+с юникодом: allow_unicode = True;
 
-{
-    "orders": [
-        {
-            "item": "принтер", (возможные проблемы с кирилицей)
-            "quantity": "10",
-            "price": "6700",
-            "buyer": "Ivanov I.I.",
-            "date": "24.09.2017"
-        },
-        {
-            "item": "scaner",
-            "quantity": "20",
-            "price": "10000",
-            "buyer": "Petrov P.P.",
-            "date": "11.01.2018"
-        },
-        {
-            "item": "scaner",
-            "quantity": "20",
-            "price": "10000",
-            "buyer": "Petrov P.P.",
-            "date": "11.01.2018"
-        },
-        {
-            "item": "scaner",
-            "quantity": "20",
-            "price": "10000",
-            "buyer": "Petrov P.P.",
-            "date": "11.01.2018"
-        }
-    ]
-}
-
-вам нужно подгрузить JSON-объект
-и достучаться до списка, который и нужно пополнять
-а потом сохранять все в файл
+Реализовать считывание данных из созданного файла и проверить,
+совпадают ли они с исходными.
 """
-import json
+'''
+import socket
+obj_sock = socket.socket()
+# bytes ->
+obj_sock.sendto(var, ())
+#close
+клиент 1) 2)
+'''
+import yaml
 
-def write_order_to_json(item, quantity, price, buyer, date):
-    with open('orders.json', encoding='utf-8') as f:
-        obj = json.load(f)
+data = {'items': ['computer', 'printer', 'keyboard', 'mouse'],
+        'items_quantity': 4,
+        'items_ptice': {'computer': '200€-1000₫',
+                        'keyboard': '5₽-50₽',
+                        'mouse': '4₩-7₩',
+                        'printer': '100₴-300₴'},
+        }
 
-    orders = {
-        'item': item,
-        'quantity': quantity,
-        'price': price,
-        'buyer': buyer,
-        'date':date,
-    }
+with open('file.yaml', 'w', encoding='utf-8') as f:
+    yaml.dump(data, f, default_flow_style=False, allow_unicode=True) # вот про allow_unicod не увидел в задании и десять минут рыл стековерфлоу
 
-    obj['orders'].append(orders)
+with open('file.yaml', encoding='utf-8') as f_n:
+    new_f_n = yaml.safe_load(f_n)
 
-    with open('orders.json', 'w') as f_n:
-        json.dump(obj, f_n, indent=4)
+if (new_f_n == data):
+    print('Всё совпадает')
+else: print('Ничего не совпадает млин!')
 
-
-write_order_to_json('5', '3', '1000', 'Kashina', '21.01.22')
-write_order_to_json('scaner', '20', '10000', 'Petrov P.P.', '11.01.2018')
-write_order_to_json('computer', '5', '40000', 'Sidorov S.S.', '2.05.2019')
+print(new_f_n)
