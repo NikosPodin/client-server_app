@@ -53,7 +53,7 @@ def main():
     client_socket = socket(AF_INET, SOCK_STREAM)
     server_address, server_port = client_args()
     try:
-        server_address.connect(server_address, server_port)
+        client_socket.connect(server_address, server_port)
     except ConnectionError:
         print('Error')
         exit(1)
