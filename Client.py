@@ -19,7 +19,6 @@ port — tcp-порт на сервере, по умолчанию 7777.
 -a <addr> — IP-адрес для прослушивания (по умолчанию слушает все доступные адреса).
 '''
 
-
 from socket import *
 import argparse
 import json
@@ -32,11 +31,38 @@ MAX_CONNECTIONS = 5
 MAX_PACKAGE_LENGTH = 1024
 ENCODING = 'utf-8'
 
+# Функция для приема данных от сервера
+def receive_data(_sock):
+    try:
+        data = _sock.recv(1024)  # Принять не более 1024 байтов данных
+        data_decode = json.loads(data.decode('utf-8'))
+        if data_decode['response'] in (100, 101, 102, 200, 201, 202):
+            print('Код возврата:', data_decode['response'], data_decode['alert'])
+    except json.decoder.JSONDecodeError:
+        print('Сообщение сервера не распознано')
+
+# Функция для соединения с сервером. Отправялет presence-сообщение
+def get_socket(msg, host, port):
+    try:
+        _sock = socket(AF_INET, SOCK_STREAM)  # сокет TCP
+        _sock.connect((host, port))
+
+        send_data(msg, _sock)
+        receive_data(_sock)
+        _sock.close()
+
+    except ConnectionRefusedError as err:
+        print("Ошибка создания сокета: {}".format(err))
+
+# Утилита кодирования и отправки сообщения принимает словарь и отправляет его
+def send_data(msg, data):
+    print(f'Отправка сообщения {msg}')
+    data.send(msg)
 
 def client_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('address', type=str, help='Address')
-    parser.add_argument("port", nargs='?', type=int, default=DEFAULT_PORT, help='Server port')
+    parser.add_argument("-a", type=str, help='Address') #address
+    parser.add_argument("-p", nargs='?', type=int, default=DEFAULT_PORT, help='Server port') #port
     args = parser.parse_args()
     ip_re_tpl = r'^((25[0-5]|2[4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[4]\d|[01]?\d\d?)$'
     if re.match(ip_re_tpl, args.address) is None:
@@ -45,18 +71,19 @@ def client_args():
     if not 1024 <= args.port <= 65535:
         print('Please enter the port between 1024-65535')
         exit(1)
-    return args.address, args.port
+    # return args.address, args.port
+    return args
 
 
 def main():
     # server = create_server()
-    client_socket = socket(AF_INET, SOCK_STREAM)
-    #server_address, server_port = client_args()
-    try:
-        client_socket.connect(client_args())
-    except ConnectionError:
-        print('Error')
-        exit(1)
+    # client_socket = socket(AF_INET, SOCK_STREAM)
+    # server_address, server_port = client_args()
+    # try:
+    #     client_socket.connect(client_args())
+    # except ConnectionError:
+    #     print('Error')
+    #     exit(1)
 
     client_message = {
         "action": "presence",
@@ -68,16 +95,21 @@ def main():
         }
     }
 
+    args = client_args()
+    host = args.addr
+    port = args.port
+
     data = json.dumps(client_message).encode(ENCODING)
-    server_address.send(data)
+    # server_address.send(data)
+    get_socket(data, host, port)
 
-    data = server_address.recv(MAX_PACKAGE_LENGTH)
-    message = json.loads(data.decode(ENCODING))
-
-    print(f'Server response code: {message:["response"]}')
-    print(f'Server message: {message["alert"]}')
-
-    server_address.close()
+    # data = server_address.recv(MAX_PACKAGE_LENGTH)
+    # message = json.loads(data.decode(ENCODING))
+    #
+    # print(f'Server response code: {message:["response"]}')
+    # print(f'Server message: {message["alert"]}')
+    #
+    # server_address.close()
 
 
 if __name__ == '__main__':
