@@ -19,17 +19,14 @@ port — tcp-порт на сервере, по умолчанию 7777.
 -a <addr> — IP-адрес для прослушивания (по умолчанию слушает все доступные адреса).
 '''
 
+
 from socket import *
 import argparse
 import json
 import re
 import time
 
-DEFAULT_PORT = 7777
-DEFAULT_IP_ADDRESS = '127.0.0.1'
-MAX_CONNECTIONS = 5
-MAX_PACKAGE_LENGTH = 1024
-ENCODING = 'utf-8'
+from def_var import DEFAULT_PORT, ENCODING
 
 # Функция для приема данных от сервера
 def receive_data(_sock):

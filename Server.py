@@ -26,12 +26,7 @@ import re
 from socket import *
 import time
 
-DEFAULT_PORT = 7777
-DEFAULT_IP_ADDRESS = '127.0.0.1'
-MAX_CONNECTIONS = 5
-MAX_PACKAGE_LENGTH = 1024
-ENCODING = 'utf-8'
-
+from def_var import DEFAULT_IP_ADDRESS, MAX_PACKAGE_LENGTH, ENCODING, DEFAULT_PORT
 
 def client_args():
     args_parser = argparse.ArgumentParser()
